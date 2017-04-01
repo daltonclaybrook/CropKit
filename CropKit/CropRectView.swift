@@ -14,6 +14,7 @@ class CropRectView: UIView {
     
     var image: UIImage? { didSet { updateView() } }
     private let imageView = UIImageView()
+    private let dimmingView = UIView()
     private let pointManager = CropDragPointManager()
     
     override var intrinsicContentSize: CGSize {
@@ -39,6 +40,8 @@ class CropRectView: UIView {
     //MARK: Private
     
     private func configureView() {
+        
+        
         pointManager.delegate = self
         imageView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(imageView)

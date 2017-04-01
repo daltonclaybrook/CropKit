@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		751ECD871E8FEA4200610A5E /* DimmingMaskView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 751ECD861E8FEA4200610A5E /* DimmingMaskView.swift */; };
 		75E8663F1E8F56D300400BE8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E8663E1E8F56D300400BE8 /* AppDelegate.swift */; };
 		75E866411E8F56D300400BE8 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75E866401E8F56D300400BE8 /* ViewController.swift */; };
 		75E866441E8F56D300400BE8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75E866421E8F56D300400BE8 /* Main.storyboard */; };
@@ -20,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		751ECD861E8FEA4200610A5E /* DimmingMaskView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DimmingMaskView.swift; sourceTree = "<group>"; };
 		75E8663B1E8F56D300400BE8 /* CropKit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CropKit.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		75E8663E1E8F56D300400BE8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		75E866401E8F56D300400BE8 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 				75E866531E8F578200400BE8 /* CropRectView.swift */,
 				75E866551E8F579B00400BE8 /* CropDragPointView.swift */,
 				75E866591E8F683000400BE8 /* CropDragPointManager.swift */,
+				751ECD861E8FEA4200610A5E /* DimmingMaskView.swift */,
 			);
 			name = CropViewController;
 			sourceTree = "<group>";
@@ -164,6 +167,7 @@
 				75E866411E8F56D300400BE8 /* ViewController.swift in Sources */,
 				75E8665A1E8F683000400BE8 /* CropDragPointManager.swift in Sources */,
 				75E866561E8F579B00400BE8 /* CropDragPointView.swift in Sources */,
+				751ECD871E8FEA4200610A5E /* DimmingMaskView.swift in Sources */,
 				75E8663F1E8F56D300400BE8 /* AppDelegate.swift in Sources */,
 				75E866541E8F578200400BE8 /* CropRectView.swift in Sources */,
 				75E866521E8F56ED00400BE8 /* CropViewController.swift in Sources */,
@@ -293,6 +297,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 4SGAZDJL4U;
 				INFOPLIST_FILE = CropKit/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.claybrooksoftware.CropKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -306,6 +311,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 4SGAZDJL4U;
 				INFOPLIST_FILE = CropKit/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.claybrooksoftware.CropKit;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -332,6 +338,7 @@
 				75E8664F1E8F56D300400BE8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
