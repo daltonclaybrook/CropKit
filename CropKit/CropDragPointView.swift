@@ -39,7 +39,7 @@ class CropDragPointView: UIView {
     
     private let circleView = UIView()
     private var state = State.idle
-    private let circleSizeMultiplier: CGFloat = 0.6
+    private let circleSizeMultiplier: CGFloat = 0.3
     private let preferredSize: CGFloat = 44
     override var intrinsicContentSize: CGSize {
         return CGSize(width: preferredSize, height: preferredSize)

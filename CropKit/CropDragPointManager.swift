@@ -8,35 +8,58 @@
 
 import UIKit
 
-struct CropDragPointManager {
+protocol CropDragPointManagerDelegate: class {
+    func cropDragPointManager(_ manager: CropDragPointManager, updatedFrame frame: CGRect)
+}
+
+class CropDragPointManager {
     
-    let corners: [CropDragPointView]
+    weak var delegate: CropDragPointManagerDelegate?
+    let corners: [CropDragPointView] // topLeft, topRight, bottomRight, bottomLeft
     let sides: [CropDragPointView]
     var allViews: [CropDragPointView] {
         return corners + sides
     }
+    var pointFrame: CGRect {
+        var topLeft = CGPoint(x: CGFloat.greatestFiniteMagnitude, y: .greatestFiniteMagnitude)
+        var bottomRight = CGPoint.zero
+        for corner in corners {
+            if corner.center.x <= topLeft.x && corner.center.y <= topLeft.y {
+                topLeft = corner.center
+            }
+            if corner.center.x >= bottomRight.x && corner.center.y >= bottomRight.y {
+                bottomRight = corner.center
+            }
+        }
+        return CGRect(x: topLeft.x, y: topLeft.y, width: bottomRight.x - topLeft.x, height: bottomRight.y - topLeft.y)
+    }
     
-    init(bounds: CGRect) {
-        let views = CropDragPointManager.createViews(in: bounds)
+    init() {
+        let views = CropDragPointManager.createViews()
         corners = views.corners
         sides = views.sides
         (corners + sides).forEach { $0.delegate = self }
     }
     
+    public func updatePointFrame(_ frame: CGRect) {
+        [frame.topLeft, frame.topRight, frame.bottomRight, frame.bottomLeft]
+            .enumerated().forEach { corners[$0].center = $1 }
+        updateAllSidePositions()
+    }
+    
     //MARK: Private
     
-    private static func createViews(in bounds: CGRect) -> (corners: [CropDragPointView], sides: [CropDragPointView]) {
-        let padding = CGPoint(x: 30, y: 30)
-        let frame = bounds.insetBy(dx: padding.x, dy: padding.y)
+    private static func createViews() -> (corners: [CropDragPointView], sides: [CropDragPointView]) {
+        let frame = CGRect(x: 30, y: 30, width: 100, height: 100)
         
-        let topLeft = CropDragPointView(center: CGPoint(x: frame.minX, y: frame.minY))
-        let topRight = CropDragPointView(center: CGPoint(x: frame.maxX, y: frame.minY))
-        let bottomLeft = CropDragPointView(center: CGPoint(x: frame.minX, y: frame.maxY))
-        let bottomRight = CropDragPointView(center: CGPoint(x: frame.maxX, y: frame.maxY))
+        let topLeft = CropDragPointView(center: frame.topLeft)
+        let topRight = CropDragPointView(center: frame.topRight)
+        let bottomRight = CropDragPointView(center: frame.bottomRight)
+        let bottomLeft = CropDragPointView(center: frame.bottomLeft)
         
         let left = CropDragPointView(center: CGPoint(x: frame.minX, y: frame.midY))
-        let right = CropDragPointView(center: CGPoint(x: frame.maxX, y: frame.midY))
         let top = CropDragPointView(center: CGPoint(x: frame.midY, y: frame.minY))
+        let right = CropDragPointView(center: CGPoint(x: frame.maxX, y: frame.midY))
         let bottom = CropDragPointView(center: CGPoint(x: frame.midX, y: frame.maxY))
         
         applyDirection(.both, toViews: [topLeft, topRight, bottomLeft, bottomRight])
@@ -77,5 +100,21 @@ struct CropDragPointManager {
 extension CropDragPointManager: CropDragPointViewDelegate {
     func cropDragPointView(_ view: CropDragPointView, updatedCenter center: CGPoint) {
         updateAllSidePositions()
+        delegate?.cropDragPointManager(self, updatedFrame: pointFrame)
+    }
+}
+
+extension CGRect {
+    var topLeft: CGPoint {
+        return CGPoint(x: minX, y: minY)
+    }
+    var topRight: CGPoint {
+        return CGPoint(x: maxX, y: minY)
+    }
+    var bottomRight: CGPoint {
+        return CGPoint(x: maxX, y: maxY)
+    }
+    var bottomLeft: CGPoint {
+        return CGPoint(x: minX, y: maxY)
     }
 }

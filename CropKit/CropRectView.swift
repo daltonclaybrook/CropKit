@@ -14,7 +14,7 @@ class CropRectView: UIView {
     
     var image: UIImage? { didSet { updateView() } }
     private let imageView = UIImageView()
-    private let pointManager = CropDragPointManager(bounds: CGRect(x: 0, y: 0, width: 200, height: 200))
+    private let pointManager = CropDragPointManager()
     
     override var intrinsicContentSize: CGSize {
         return imageView.intrinsicContentSize
@@ -39,6 +39,7 @@ class CropRectView: UIView {
     //MARK: Private
     
     private func configureView() {
+        pointManager.delegate = self
         imageView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(imageView)
         imageView.constrainEdgesToSuperview()
@@ -49,8 +50,10 @@ class CropRectView: UIView {
         backgroundColor = .clear
         imageView.image = image
     }
-    
-    private func createDragPoints() {
-        
+}
+
+extension CropRectView: CropDragPointManagerDelegate {
+    func cropDragPointManager(_ manager: CropDragPointManager, updatedFrame frame: CGRect) {
+        print("\(frame)")
     }
 }
