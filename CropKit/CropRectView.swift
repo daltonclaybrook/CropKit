@@ -8,13 +8,22 @@
 
 import UIKit
 
+protocol CropRectViewDelegate: class {
+    func cropRectView(_ view: CropRectView, updatedFrame frame: CGRect)
+}
+
 class CropRectView: UIView {
     override var frame: CGRect { didSet { updateView() } }
     override var bounds: CGRect { didSet { updateView() } }
     
+    weak var delegate: CropRectViewDelegate?
     var image: UIImage? { didSet { updateView() } }
+    var pointFrame: CGRect {
+        return pointManager.pointFrame
+    }
+    
     private let imageView = UIImageView()
-    private let dimmingView = UIView()
+    fileprivate let dimmingView = DimmingMaskView()
     private let pointManager = CropDragPointManager()
     
     override var intrinsicContentSize: CGSize {
@@ -40,12 +49,17 @@ class CropRectView: UIView {
     //MARK: Private
     
     private func configureView() {
-        
-        
         pointManager.delegate = self
+        imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(imageView)
         imageView.constrainEdgesToSuperview()
+        
+        dimmingView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(dimmingView)
+        dimmingView.constrainEdgesToSuperview()
+        dimmingView.centerView.frame = pointFrame
+        
         pointManager.allViews.forEach { self.addSubview($0) }
     }
     
@@ -57,6 +71,6 @@ class CropRectView: UIView {
 
 extension CropRectView: CropDragPointManagerDelegate {
     func cropDragPointManager(_ manager: CropDragPointManager, updatedFrame frame: CGRect) {
-        print("\(frame)")
+        dimmingView.centerView.frame = frame
     }
 }

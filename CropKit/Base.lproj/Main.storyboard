@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="5kk-g8-Ffc">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -25,6 +24,38 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="794" y="169"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="wjW-cN-e79">
+            <objects>
+                <viewController id="5kk-g8-Ffc" customClass="ViewController" customModule="CropKit" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="gzT-FZ-GAd"/>
+                        <viewControllerLayoutGuide type="bottom" id="tHO-sT-iPL"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="rX1-3B-yL3">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ahc-kI-Nia">
+                                <rect key="frame" x="131" y="318" width="113" height="30"/>
+                                <state key="normal" title="Show Crop View"/>
+                                <connections>
+                                    <segue destination="BYZ-38-t0r" kind="presentation" id="kFg-ty-Hj7"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="ahc-kI-Nia" firstAttribute="centerY" secondItem="rX1-3B-yL3" secondAttribute="centerY" id="KU4-8J-0ZW"/>
+                            <constraint firstItem="ahc-kI-Nia" firstAttribute="centerX" secondItem="rX1-3B-yL3" secondAttribute="centerX" id="w7r-nk-Ru7"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nGL-gr-dii" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="38" y="169"/>
         </scene>
     </scenes>
 </document>
