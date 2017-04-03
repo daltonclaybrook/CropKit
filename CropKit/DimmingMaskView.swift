@@ -31,6 +31,8 @@ class DimmingMaskView: UIView {
     
     private func configureView() {
         backgroundColor = .clear
+        isUserInteractionEnabled = false
+        
         let topView = UIView()
         let rightView = UIView()
         let bottomView = UIView()

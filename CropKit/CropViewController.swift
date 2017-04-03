@@ -14,7 +14,7 @@ class CropViewController: UIViewController {
     let scrollContentView = UIView()
     let cropRectView = CropRectView()
     let imageView = UIImageView()
-    let imagePadding: CGFloat = 20.0
+    let imagePadding: CGFloat = 40.0
     
     var image: UIImage? { didSet { updateUI() } }
     
@@ -51,10 +51,10 @@ class CropViewController: UIViewController {
         scrollView.addSubview(scrollContentView)
         scrollContentView.addSubview(imageView)
         
-//        cropRectView.delegate = self
-//        cropRectView.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(cropRectView)
-//        cropRectView.constrainEdgesToSuperview()
+        cropRectView.delegate = self
+        cropRectView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(cropRectView)
+        cropRectView.constrainEdgesToSuperview()
     }
     
     //MARK: Private

@@ -39,6 +39,17 @@ class CropRectView: UIView {
         configureView()
     }
     
+    //MARK: Superclass
+    
+    override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
+        for view in pointManager.allViews {
+            if view.frame.contains(point) {
+                return true
+            }
+        }
+        return false
+    }
+    
     //MARK: Private
     
     private func configureView() {
