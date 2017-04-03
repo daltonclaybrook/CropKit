@@ -11,7 +11,6 @@ import UIKit
 class CropViewController: UIViewController {
     
     let scrollView = UIScrollView()
-    let scrollContentView = UIView()
     let cropRectView = CropRectView()
     let imageView = UIImageView()
     let imagePadding: CGFloat = 40.0
@@ -46,15 +45,12 @@ class CropViewController: UIViewController {
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
         scrollView.constrainEdgesToSuperview()
+        scrollView.addSubview(imageView)
         
-        scrollContentView.backgroundColor = .green
-        scrollView.addSubview(scrollContentView)
-        scrollContentView.addSubview(imageView)
-        
-        cropRectView.delegate = self
-        cropRectView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(cropRectView)
-        cropRectView.constrainEdgesToSuperview()
+//        cropRectView.delegate = self
+//        cropRectView.translatesAutoresizingMaskIntoConstraints = false
+//        view.addSubview(cropRectView)
+//        cropRectView.constrainEdgesToSuperview()
     }
     
     //MARK: Private
@@ -68,21 +64,18 @@ class CropViewController: UIViewController {
         
         if imageRatio >= viewRatio {
             let imageSize = CGSize(width: image.size.width + imagePadding*2.0, height: image.size.height)
-            let contentViewHeight = imageSize.width * view.bounds.height / view.bounds.width
+            let contentViewHeight = image.size.width * view.bounds.height / view.bounds.width
             let yOffset = (contentViewHeight - imageSize.height) / 2.0
-            scrollContentView.frame = CGRect(x: 0, y: 0, width: image.size.width, height: contentViewHeight)
-            imageView.frame = CGRect(x: imagePadding, y: yOffset, width: image.size.width, height: image.size.height)
-            scrollView.minimumZoomScale = view.bounds.height / contentViewHeight
+            imageView.frame = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+            scrollView.minimumZoomScale = view.bounds.height / image.size.height
         } else {
             let imageSize = CGSize(width: image.size.width, height: image.size.height + imagePadding*2.0)
-            let contentViewWidth = imageSize.height * view.bounds.width / view.bounds.height
+            let contentViewWidth = image.size.height * view.bounds.width / view.bounds.height
             let xOffset = (contentViewWidth - imageSize.width) / 2.0
-            scrollContentView.frame = CGRect(x: 0, y: 0, width: contentViewWidth, height: image.size.height)
-            imageView.frame = CGRect(x: xOffset, y: imagePadding, width: image.size.width, height: image.size.height)
-            scrollView.minimumZoomScale = view.bounds.width / contentViewWidth
+            imageView.frame = CGRect(x: 0, y: 0, width: image.size.width, height: image.size.height)
+            scrollView.minimumZoomScale = view.bounds.height / image.size.height
         }
 
-        scrollContentView.frame = view.bounds
         scrollView.contentSize = view.bounds.size
         scrollView.zoomScale = scrollView.minimumZoomScale
     }
@@ -91,7 +84,7 @@ class CropViewController: UIViewController {
 extension CropViewController: UIScrollViewDelegate {
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return scrollContentView
+        return imageView
     }
 }
 
