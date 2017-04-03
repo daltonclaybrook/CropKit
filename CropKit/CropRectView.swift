@@ -17,22 +17,15 @@ class CropRectView: UIView {
     override var bounds: CGRect { didSet { updateView() } }
     
     weak var delegate: CropRectViewDelegate?
-    var image: UIImage? { didSet { updateView() } }
     var pointFrame: CGRect {
         return pointManager.pointFrame
     }
     
-    private let imageView = UIImageView()
     fileprivate let dimmingView = DimmingMaskView()
     private let pointManager = CropDragPointManager()
     
-    override var intrinsicContentSize: CGSize {
-        return imageView.intrinsicContentSize
-    }
-    
-    init(image: UIImage) {
-        self.image = image
-        super.init(frame: CGRect(origin: .zero, size: image.size))
+    init() {
+        super.init(frame: .zero)
         configureView()
     }
     
@@ -50,10 +43,6 @@ class CropRectView: UIView {
     
     private func configureView() {
         pointManager.delegate = self
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(imageView)
-        imageView.constrainEdgesToSuperview()
         
         dimmingView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(dimmingView)
@@ -64,13 +53,13 @@ class CropRectView: UIView {
     }
     
     private func updateView () {
-        backgroundColor = .clear
-        imageView.image = image
+        // no-op
     }
 }
 
 extension CropRectView: CropDragPointManagerDelegate {
     func cropDragPointManager(_ manager: CropDragPointManager, updatedFrame frame: CGRect) {
         dimmingView.centerView.frame = frame
+        delegate?.cropRectView(self, updatedFrame: frame)
     }
 }
