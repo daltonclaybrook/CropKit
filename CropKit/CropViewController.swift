@@ -43,6 +43,8 @@ class CropViewController: UIViewController {
         super.viewDidLoad()
         scrollView.delegate = self
         scrollView.maximumZoomScale = 1.0
+        scrollView.alwaysBounceVertical = true
+        scrollView.alwaysBounceHorizontal = true
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(scrollView)
         scrollView.constrainEdgesToSuperview()
@@ -81,10 +83,27 @@ class CropViewController: UIViewController {
             imageView.frame = CGRect(x: xOffset, y: imagePadding, width: image.size.width, height: image.size.height)
             scrollView.minimumZoomScale = view.bounds.width / contentViewWidth
         }
-
+        
         scrollContentView.frame = view.bounds
         scrollView.contentSize = view.bounds.size
         scrollView.zoomScale = scrollView.minimumZoomScale
+    }
+    
+    fileprivate func updateImageViewYOffset() {
+        guard let image = image else { return }
+        
+        let imageRatio = image.size.width / image.size.height
+        let viewRatio = view.bounds.width / view.bounds.height
+        
+        if imageRatio >= viewRatio {
+            var convertedFrame = scrollContentView.convert(imageView.frame, to: view)
+            var newY = max(convertedFrame.minY, 0)
+            newY = min(newY, view.bounds.height - convertedFrame.height)
+            convertedFrame.origin.y = newY
+            imageView.frame = scrollContentView.convert(convertedFrame, from: view)
+        } else {
+         
+        }
     }
 }
 
@@ -92,6 +111,10 @@ extension CropViewController: UIScrollViewDelegate {
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return scrollContentView
+    }
+    
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        updateImageViewYOffset()
     }
 }
 
