@@ -39,6 +39,17 @@ class CropRectView: UIView {
         configureView()
     }
     
+    //MARK: Public
+    
+    func setPointFrame(_ pointFrame: CGRect, animated: Bool) {
+        let duration: TimeInterval = animated ? 0.4 : 0.0
+        UIView.animate(withDuration: duration) { 
+            self.pointManager.updatePointFrame(pointFrame)
+            self.dimmingView.centerView.frame = pointFrame
+            self.dimmingView.layoutIfNeeded()
+        }
+    }
+    
     //MARK: Superclass
     
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {

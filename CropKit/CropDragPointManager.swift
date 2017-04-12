@@ -92,6 +92,7 @@ class CropDragPointManager {
         for side in sides {
             let midX = (side.centeredBetween[0].center.x - side.centeredBetween[1].center.x)/2.0 + side.centeredBetween[1].center.x
             let midY = (side.centeredBetween[0].center.y - side.centeredBetween[1].center.y)/2.0 + side.centeredBetween[1].center.y
+            guard !midX.isNaN && !midY.isNaN else { continue }
             side.center = CGPoint(x: midX, y: midY)
         }
     }

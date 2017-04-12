@@ -11,12 +11,16 @@ import UIKit
 class CropViewController: UIViewController {
     
     let scrollView = UIScrollView()
-    let scrollContentView = UIView()
     let cropRectView = CropRectView()
     let imageView = UIImageView()
     let imagePadding: CGFloat = 40.0
     
-    var image: UIImage? { didSet { updateUI() } }
+    fileprivate var topConstraint: NSLayoutConstraint!
+    fileprivate var rightConstraint: NSLayoutConstraint!
+    fileprivate var bottomConstraint: NSLayoutConstraint!
+    fileprivate var leftConstraint: NSLayoutConstraint!
+    
+    var image: UIImage? { didSet { updateImage() } }
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -25,19 +29,18 @@ class CropViewController: UIViewController {
     init(image: UIImage) {
         self.image = image
         super.init(nibName: nil, bundle: nil)
-        updateUI()
+        updateImage()
     }
     
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
     
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        updateUI()
-    }
-    
     //MARK: Superclass
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,9 +52,17 @@ class CropViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.constrainEdgesToSuperview()
         
-        scrollContentView.backgroundColor = .green
-        scrollView.addSubview(scrollContentView)
-        scrollContentView.addSubview(imageView)
+        scrollView.addSubview(imageView)
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        topConstraint = imageView.topAnchor.constraint(equalTo: scrollView.topAnchor)
+        rightConstraint = scrollView.rightAnchor.constraint(equalTo: imageView.rightAnchor)
+        bottomConstraint = scrollView.bottomAnchor.constraint(equalTo: imageView.bottomAnchor)
+        leftConstraint = imageView.leftAnchor.constraint(equalTo: scrollView.leftAnchor)
+        
+        topConstraint.isActive = true
+        rightConstraint.isActive = true
+        bottomConstraint.isActive = true
+        leftConstraint.isActive = true
         
         cropRectView.delegate = self
         cropRectView.translatesAutoresizingMaskIntoConstraints = false
@@ -59,67 +70,74 @@ class CropViewController: UIViewController {
         cropRectView.constrainEdgesToSuperview()
     }
     
-    //MARK: Private
-    
-    private func updateUI() {
-        imageView.image = image
-        guard let image = image else { return }
-        
-        let imageRatio = image.size.width / image.size.height
-        let viewRatio = view.bounds.width / view.bounds.height
-        
-        if imageRatio >= viewRatio {
-            let imageSize = CGSize(width: image.size.width + imagePadding*2.0, height: image.size.height)
-            let contentViewHeight = imageSize.width * view.bounds.height / view.bounds.width
-            let yOffset = (contentViewHeight - imageSize.height) / 2.0
-            scrollContentView.frame = CGRect(x: 0, y: 0, width: image.size.width, height: contentViewHeight)
-            imageView.frame = CGRect(x: imagePadding, y: yOffset, width: image.size.width, height: image.size.height)
-            scrollView.minimumZoomScale = view.bounds.height / contentViewHeight
-        } else {
-            let imageSize = CGSize(width: image.size.width, height: image.size.height + imagePadding*2.0)
-            let contentViewWidth = imageSize.height * view.bounds.width / view.bounds.height
-            let xOffset = (contentViewWidth - imageSize.width) / 2.0
-            scrollContentView.frame = CGRect(x: 0, y: 0, width: contentViewWidth, height: image.size.height)
-            imageView.frame = CGRect(x: xOffset, y: imagePadding, width: image.size.width, height: image.size.height)
-            scrollView.minimumZoomScale = view.bounds.width / contentViewWidth
-        }
-        
-        scrollContentView.frame = view.bounds
-        scrollView.contentSize = view.bounds.size
-        scrollView.zoomScale = scrollView.minimumZoomScale
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateZoomScale()
+        correctCropRectFrame(animated: false)
     }
     
-    fileprivate func updateImageViewYOffset() {
-        guard let image = image else { return }
+    //MARK: Private
+    
+    private func updateImage() {
+        imageView.image = image
+        imageView.layer.magnificationFilter = kCAFilterNearest
+        view.layoutIfNeeded()
         
-        let imageRatio = image.size.width / image.size.height
-        let viewRatio = view.bounds.width / view.bounds.height
+        cropRectView.setPointFrame(view.bounds, animated: false)
+        updateZoomScale()
+        updateImageConstraints()
+        correctCropRectFrame(animated: false)
+    }
+    
+    private func updateZoomScale() {
+        guard isViewLoaded, imageView.bounds.size != .zero else { return }
         
-        if imageRatio >= viewRatio {
-            var convertedFrame = scrollContentView.convert(imageView.frame, to: view)
-            var newY = max(convertedFrame.minY, 0)
-            newY = min(newY, view.bounds.height - convertedFrame.height)
-            convertedFrame.origin.y = newY
-            imageView.frame = scrollContentView.convert(convertedFrame, from: view)
-        } else {
-         
-        }
+        let widthScale = view.bounds.width / imageView.bounds.width
+        let heightScale = view.bounds.height / imageView.bounds.height
+        let minScale = min(widthScale, heightScale)
+        
+        scrollView.minimumZoomScale = minScale
+        scrollView.maximumZoomScale = 100
+        scrollView.zoomScale = minScale
+    }
+    
+    fileprivate func updateImageConstraints() {
+        guard isViewLoaded, imageView.bounds.size != .zero else { return }
+        
+        let yOffset = max(0, (view.bounds.height - imageView.frame.height) / 2)
+        topConstraint.constant = yOffset
+        bottomConstraint.constant = yOffset
+        
+        let xOffset = max(0, (view.bounds.width - imageView.frame.width) / 2)
+        leftConstraint.constant = xOffset
+        rightConstraint.constant = xOffset
+        
+        view.layoutIfNeeded()
+    }
+    
+    fileprivate func correctCropRectFrame(animated: Bool) {
+        let pointFrame = imageView.frame.intersection(cropRectView.pointFrame)
+        cropRectView.setPointFrame(pointFrame, animated: animated)
     }
 }
 
 extension CropViewController: UIScrollViewDelegate {
     
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return scrollContentView
+        return imageView
     }
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-        updateImageViewYOffset()
+        updateImageConstraints()
+    }
+    
+    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
+        correctCropRectFrame(animated: true)
     }
 }
 
 extension CropViewController: CropRectViewDelegate {
     func cropRectView(_ view: CropRectView, updatedFrame frame: CGRect) {
-        
+        correctCropRectFrame(animated: false)
     }
 }
