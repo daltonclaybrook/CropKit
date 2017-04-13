@@ -21,18 +21,19 @@ class CropDragPointManager {
         return corners + sides
     }
     var pointFrame: CGRect {
-        var topLeft = CGPoint(x: CGFloat.greatestFiniteMagnitude, y: .greatestFiniteMagnitude)
-        var bottomRight = CGPoint.zero
-        for corner in corners {
-            if corner.center.x <= topLeft.x && corner.center.y <= topLeft.y {
-                topLeft = corner.center
-            }
-            if corner.center.x >= bottomRight.x && corner.center.y >= bottomRight.y {
-                bottomRight = corner.center
-            }
-        }
+        var topLeft = corners[0].center
+        var bottomRight = corners[2].center
+        
+        topLeft.x = min(topLeft.x, bottomRight.x)
+        topLeft.y = min(topLeft.y, bottomRight.y)
+        bottomRight.x = max(bottomRight.x, topLeft.x)
+        bottomRight.y = max(bottomRight.y, topLeft.y)
+        
         return CGRect(x: topLeft.x, y: topLeft.y, width: bottomRight.x - topLeft.x, height: bottomRight.y - topLeft.y)
     }
+    
+    fileprivate var lastFrame: CGRect?
+    fileprivate var minimumSize = CGSize(width: 50, height: 50)
     
     init() {
         let views = CropDragPointManager.createViews()
@@ -100,8 +101,27 @@ class CropDragPointManager {
 
 extension CropDragPointManager: CropDragPointViewDelegate {
     func cropDragPointView(_ view: CropDragPointView, updatedCenter center: CGPoint) {
-        updateAllSidePositions()
-        delegate?.cropDragPointManager(self, updatedFrame: pointFrame)
+        let oldFrame = pointFrame
+        var newFrame = oldFrame
+        if let lastFrame = lastFrame {
+            if newFrame.width < minimumSize.width {
+                newFrame.origin.x = lastFrame.minX
+                newFrame.size.width = lastFrame.width
+            }
+            if newFrame.height < minimumSize.height {
+                newFrame.origin.y = lastFrame.minY
+                newFrame.size.height = lastFrame.height
+            }
+        }
+        
+        if oldFrame != newFrame {
+            updatePointFrame(newFrame)
+        } else {
+            updateAllSidePositions()
+        }
+        
+        lastFrame = newFrame
+        delegate?.cropDragPointManager(self, updatedFrame: newFrame)
     }
 }
 

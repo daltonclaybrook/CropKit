@@ -116,7 +116,11 @@ class CropViewController: UIViewController {
     }
     
     fileprivate func correctCropRectFrame(animated: Bool) {
-        let pointFrame = imageView.frame.intersection(cropRectView.pointFrame)
+        var pointFrame = imageView.frame.intersection(cropRectView.pointFrame)
+        if pointFrame.size == .zero {
+            pointFrame = imageView.frame
+        }
+        
         cropRectView.setPointFrame(pointFrame, animated: animated)
     }
 }

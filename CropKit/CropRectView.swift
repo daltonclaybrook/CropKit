@@ -42,12 +42,12 @@ class CropRectView: UIView {
     //MARK: Public
     
     func setPointFrame(_ pointFrame: CGRect, animated: Bool) {
-        let duration: TimeInterval = animated ? 0.4 : 0.0
-        UIView.animate(withDuration: duration) { 
+        let duration: TimeInterval = animated ? 0.3 : 0.0
+        UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.0, options: .beginFromCurrentState, animations: { 
             self.pointManager.updatePointFrame(pointFrame)
             self.dimmingView.centerView.frame = pointFrame
             self.dimmingView.layoutIfNeeded()
-        }
+        }, completion: nil)
     }
     
     //MARK: Superclass
