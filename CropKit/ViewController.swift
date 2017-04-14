@@ -13,7 +13,8 @@ class ViewController: UIViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         super.prepare(for: segue, sender: sender)
         if let viewController = segue.destination as? CropViewController {
-            viewController.image = #imageLiteral(resourceName: "profile")
+//            viewController.image = #imageLiteral(resourceName: "profile")
+            viewController.image = #imageLiteral(resourceName: "tall")
         }
     }
 }

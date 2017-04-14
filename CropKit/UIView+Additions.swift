@@ -18,10 +18,10 @@ extension UIView { // Constraints
         guard let superview=superview else { assertionFailure("must have a superview"); return }
         
         translatesAutoresizingMaskIntoConstraints = false
-        superview.leftAnchor.constraint(equalTo: leftAnchor, constant: inset.left).isActive = true
-        superview.topAnchor.constraint(equalTo: topAnchor, constant: inset.top).isActive = true
-        superview.rightAnchor.constraint(equalTo: rightAnchor, constant: -inset.right).isActive = true
-        superview.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -inset.bottom).isActive = true
+        superview.leftAnchor.constraint(equalTo: leftAnchor, constant: -inset.left).isActive = true
+        superview.topAnchor.constraint(equalTo: topAnchor, constant: -inset.top).isActive = true
+        superview.rightAnchor.constraint(equalTo: rightAnchor, constant: inset.right).isActive = true
+        superview.bottomAnchor.constraint(equalTo: bottomAnchor, constant: inset.bottom).isActive = true
     }
 }
 
@@ -32,5 +32,11 @@ extension UIView { // Actions
         CATransaction.setDisableActions(true)
         block()
         CATransaction.commit()
+    }
+}
+
+extension UIEdgeInsets {
+    func dividingByScale(_ scale: CGFloat) -> UIEdgeInsets {
+        return UIEdgeInsets(top: top/scale, left: left/scale, bottom: bottom/scale, right: right/scale)
     }
 }
