@@ -8,18 +8,30 @@
 
 import UIKit
 
+struct EdgeConstraints {
+    let left: NSLayoutConstraint
+    let top: NSLayoutConstraint
+    let right: NSLayoutConstraint
+    let bottom: NSLayoutConstraint
+    
+    func updateWithInsets(_ insets: UIEdgeInsets) {
+        left.constant = insets.left
+        top.constant = insets.top
+        right.constant = insets.right
+        bottom.constant = insets.bottom
+    }
+}
+
 class CropViewController: UIViewController {
     
     let scrollView = UIScrollView()
     let cropRectView = CropRectView()
     let imageView = UIImageView()
     let imageContainerView = UIView()
-    let imagePadding = UIEdgeInsets(top: 64, left: 20, bottom: 100, right: 20)
+    let imagePadding = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
     
-    fileprivate var topConstraint: NSLayoutConstraint!
-    fileprivate var rightConstraint: NSLayoutConstraint!
-    fileprivate var bottomConstraint: NSLayoutConstraint!
-    fileprivate var leftConstraint: NSLayoutConstraint!
+    fileprivate var paddingEdges: EdgeConstraints!
+    fileprivate var centeringEdges: EdgeConstraints!
     
     var image: UIImage? { didSet { updateImage() } }
     
@@ -56,17 +68,9 @@ class CropViewController: UIViewController {
         imageContainerView.addSubview(imageView)
         imageContainerView.translatesAutoresizingMaskIntoConstraints = false
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.constrainEdgesToSuperview(with: imagePadding)
         
-        topConstraint = imageContainerView.topAnchor.constraint(equalTo: scrollView.topAnchor)
-        rightConstraint = scrollView.rightAnchor.constraint(equalTo: imageContainerView.rightAnchor)
-        bottomConstraint = scrollView.bottomAnchor.constraint(equalTo: imageContainerView.bottomAnchor)
-        leftConstraint = imageContainerView.leftAnchor.constraint(equalTo: scrollView.leftAnchor)
-        
-        topConstraint.isActive = true
-        rightConstraint.isActive = true
-        bottomConstraint.isActive = true
-        leftConstraint.isActive = true
+        paddingEdges = configureEdgeConstraints(forView: imageView, padding: imagePadding)
+        centeringEdges = configureEdgeConstraints(forView: imageContainerView)
         
         cropRectView.delegate = self
         cropRectView.translatesAutoresizingMaskIntoConstraints = false
@@ -81,6 +85,22 @@ class CropViewController: UIViewController {
     }
     
     //MARK: Private
+    
+    private func configureEdgeConstraints(forView: UIView, padding: UIEdgeInsets? = nil) -> EdgeConstraints {
+        assert(forView.superview != nil)
+        let superview = forView.superview!
+        
+        let leftConstraint = forView.leftAnchor.constraint(equalTo: superview.leftAnchor, constant: padding?.left ?? 0)
+        let topConstraint = forView.topAnchor.constraint(equalTo: superview.topAnchor, constant: padding?.top ?? 0)
+        let rightConstraint = superview.rightAnchor.constraint(equalTo: forView.rightAnchor, constant: padding?.right ?? 0)
+        let bottomConstraint = superview.bottomAnchor.constraint(equalTo: forView.bottomAnchor, constant: padding?.bottom ?? 0)
+        
+        topConstraint.isActive = true
+        rightConstraint.isActive = true
+        bottomConstraint.isActive = true
+        leftConstraint.isActive = true
+        return EdgeConstraints(left: leftConstraint, top: topConstraint, right: rightConstraint, bottom: bottomConstraint)
+    }
     
     private func updateImage() {
         imageView.image = image
@@ -103,18 +123,21 @@ class CropViewController: UIViewController {
         scrollView.minimumZoomScale = minScale
         scrollView.maximumZoomScale = 100
         scrollView.zoomScale = minScale
+        paddingEdges.updateWithInsets(imagePadding.dividingByScale(minScale))
+        
+        view.layoutIfNeeded()
     }
     
     fileprivate func updateImageConstraints() {
         guard isViewLoaded, imageContainerView.bounds.size != .zero else { return }
         
         let yOffset = max(0, (view.bounds.height - imageContainerView.frame.height) / 2)
-        topConstraint.constant = yOffset
-        bottomConstraint.constant = yOffset
+        centeringEdges.top.constant = yOffset
+        centeringEdges.bottom.constant = yOffset
         
         let xOffset = max(0, (view.bounds.width - imageContainerView.frame.width) / 2)
-        leftConstraint.constant = xOffset
-        rightConstraint.constant = xOffset
+        centeringEdges.left.constant = xOffset
+        centeringEdges.right.constant = xOffset
         
         view.layoutIfNeeded()
     }
