@@ -166,6 +166,16 @@ extension CropViewController: UIScrollViewDelegate {
     func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
         correctCropRectFrame(animated: true)
     }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            correctCropRectFrame(animated: true)
+        }
+    }
+    
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        correctCropRectFrame(animated: true)
+    }
 }
 
 extension CropViewController: CropRectViewDelegate {
