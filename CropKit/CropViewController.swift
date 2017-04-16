@@ -28,10 +28,12 @@ class CropViewController: UIViewController {
     let cropRectView = CropRectView()
     let imageView = UIImageView()
     let imageContainerView = UIView()
-    let imagePadding = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
+    let imagePadding = UIEdgeInsets(top: 20, left: 20, bottom: 90, right: 20)
     
     fileprivate var paddingEdges: EdgeConstraints!
     fileprivate var centeringEdges: EdgeConstraints!
+    private let cropButton = UIButton()
+    private let resetButton = UIButton()
     
     var image: UIImage? { didSet { updateImage() } }
     
@@ -76,15 +78,46 @@ class CropViewController: UIViewController {
         cropRectView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(cropRectView)
         cropRectView.constrainEdgesToSuperview()
+        
+        configureButtons()
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         updateZoomScale()
         correctCropRectFrame(animated: false)
+        updateCropButton()
+    }
+    
+    //MARK: Actions
+    
+    @objc private func cropButtonTapped(_ sender: Any) {
+        print("tapped!")
     }
     
     //MARK: Private
+    
+    private func configureButtons() {
+        view.addSubview(cropButton)
+        cropButton.setTitle("CROP", for: .normal)
+        cropButton.setTitleColor(.white, for: .normal)
+        cropButton.setTitleColor(UIColor(white: 1.0, alpha: 0.6), for: .highlighted)
+        cropButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17.0)
+        cropButton.translatesAutoresizingMaskIntoConstraints = false
+        cropButton.layer.masksToBounds = true
+        cropButton.backgroundColor = .blue
+        cropButton.addTarget(self, action: #selector(CropViewController.cropButtonTapped(_:)), for: .touchUpInside)
+        
+        view.bottomAnchor.constraint(equalTo: cropButton.bottomAnchor, constant: 20.0).isActive = true
+        view.centerXAnchor.constraint(equalTo: cropButton.centerXAnchor).isActive = true
+        cropButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.5).isActive = true
+        cropButton.heightAnchor.constraint(equalToConstant: 50.0).isActive = true
+        updateCropButton()
+    }
+    
+    private func updateCropButton() {
+        cropButton.layer.cornerRadius = cropButton.frame.height / 2.0
+    }
     
     private func configureEdgeConstraints(forView: UIView, padding: UIEdgeInsets? = nil) -> EdgeConstraints {
         assert(forView.superview != nil)
