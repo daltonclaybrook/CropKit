@@ -22,6 +22,10 @@ struct EdgeConstraints {
     }
 }
 
+protocol CropViewControllerDelegate: class {
+    func cropViewController(_ viewController: CropViewController, cropped image: UIImage)
+}
+
 class CropViewController: UIViewController {
     
     let scrollView = UIScrollView()
@@ -30,10 +34,12 @@ class CropViewController: UIViewController {
     let imageContainerView = UIView()
     let imagePadding = UIEdgeInsets(top: 20, left: 20, bottom: 90, right: 20)
     
+    weak var delegate: CropViewControllerDelegate?
+    let cropButton = UIButton()
+    let resetButton = UIButton()
+    
     fileprivate var paddingEdges: EdgeConstraints!
     fileprivate var centeringEdges: EdgeConstraints!
-    private let cropButton = UIButton()
-    private let resetButton = UIButton()
     
     var image: UIImage? { didSet { updateImage() } }
     
@@ -82,16 +88,9 @@ class CropViewController: UIViewController {
         configureButtons()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        DispatchQueue.main.async {
-            self.updateZoomScale()
-            self.correctCropRectFrame(animated: false)
-        }
-    }
-    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        scrollView.layoutIfNeeded()
         updateZoomScale()
         correctCropRectFrame(animated: false)
         updateCropButton()
@@ -100,7 +99,18 @@ class CropViewController: UIViewController {
     //MARK: Actions
     
     @objc private func cropButtonTapped(_ sender: Any) {
-        print("tapped!")
+        guard !scrollView.isDragging &&
+            !scrollView.isDecelerating &&
+            !scrollView.isZooming &&
+            !scrollView.isTracking &&
+            !scrollView.isZoomBouncing,
+            let image = image else { return }
+        
+        let frameInImage = view.convert(cropRectView.pointFrame, to: imageView).integral
+        let croppedImage = image.cgImage?.cropping(to: frameInImage).flatMap { UIImage(cgImage: $0) }
+        if let croppedImage = croppedImage {
+            delegate?.cropViewController(self, cropped: croppedImage)
+        }
     }
     
     //MARK: Private
@@ -167,6 +177,8 @@ class CropViewController: UIViewController {
         paddingEdges.updateWithInsets(imagePadding.dividingByScale(minScale))
         
         view.layoutIfNeeded()
+        let imageViewFrame = imageView.convert(imageView.bounds, to: view)
+        cropRectView.setPointFrame(imageViewFrame, animated: false)
     }
     
     fileprivate func updateImageConstraints() {

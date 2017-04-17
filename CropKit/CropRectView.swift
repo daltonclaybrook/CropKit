@@ -13,8 +13,6 @@ protocol CropRectViewDelegate: class {
 }
 
 class CropRectView: UIView {
-    override var frame: CGRect { didSet { updateView() } }
-    override var bounds: CGRect { didSet { updateView() } }
     
     weak var delegate: CropRectViewDelegate?
     var pointFrame: CGRect {
@@ -42,6 +40,8 @@ class CropRectView: UIView {
     //MARK: Public
     
     func setPointFrame(_ pointFrame: CGRect, animated: Bool) {
+        guard dimmingView.bounds.contains(pointFrame) else { return }
+        
         let duration: TimeInterval = animated ? 0.3 : 0.0
         UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.0, options: .beginFromCurrentState, animations: { 
             self.pointManager.updatePointFrame(pointFrame)
@@ -72,10 +72,6 @@ class CropRectView: UIView {
         dimmingView.centerView.frame = pointFrame
         
         pointManager.allViews.forEach { self.addSubview($0) }
-    }
-    
-    private func updateView () {
-        // no-op
     }
 }
 
