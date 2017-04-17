@@ -82,6 +82,14 @@ class CropViewController: UIViewController {
         configureButtons()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        DispatchQueue.main.async {
+            self.updateZoomScale()
+            self.correctCropRectFrame(animated: false)
+        }
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         updateZoomScale()
@@ -201,13 +209,15 @@ extension CropViewController: UIScrollViewDelegate {
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        if !decelerate {
+        if !decelerate && !scrollView.isZooming && !scrollView.isZoomBouncing {
             correctCropRectFrame(animated: true)
         }
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        correctCropRectFrame(animated: true)
+        if !scrollView.isZooming && !scrollView.isZoomBouncing {
+            correctCropRectFrame(animated: true)
+        }
     }
 }
 
